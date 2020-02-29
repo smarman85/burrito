@@ -58,12 +58,12 @@ entryPoints:
     common:
       name: common_worker
       binstub: bin/common_worker
-      count: 5
+      count: 2
     threaded:
       name: threaded_worker
       binstub: bin/threaded_worker
-      count: 1
+      count: 2
     low_pri:
       name: low_pri
       binstub: bin/low_pri_worker
-      count: 2
+      count: 10
