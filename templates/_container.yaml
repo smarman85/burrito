@@ -1,0 +1,67 @@
+{{- /*
+container
+note: by default, no port spec is set. Make sure you add in override
+something similar to:
+
+ports:
+  - containerPort: 3000
+    name: unicorn
+
+*/ -}}
+
+{{- define "container.tpl" -}}
+{{ $root := . -}}
+    replica: {{ (int .Values.entryPoints.sidekiq.common.count) }}
+{{ if .Values.entryPoints.sidekiq.common -}}
+
+{{ range until (int .Values.entryPoints.sidekiq.common.count) -}}
+- name: {{ $root.Values.entryPoints.sidekiq.common.name }}_{{ . }}
+  image: form-values
+  command: {{ $root.Values.entryPoints.sidekiq.common.count }}
+  volumeMounts:
+{{ end }}
+{{- end -}}
+name: {{ .Values.appName }}
+imagePullPolicy: "{{ .Values.pullPolicy }}"
+{{ if .Values.podEnv }}
+env:
+{{ toYaml .Values.podEnv | indent 2 }}
+{{ else }}
+env:
+{{ end }}
+  - name: NODE_IP
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.hostIP
+  - name: DD_AGENT_HOST
+    value: $(NODE_IP)
+  - name: DOGSTATSD_HOST_IP
+    value: $(NODE_IP)
+  - name: DATADOG_HOST
+    value: $(NODE_IP)
+  - name: DD_KUBERNETES_POD_LABELS_AS_TAGS
+    value: '{"app":"{{ .Values.appName }}"}'
+  - name: APP_COMMIT_SHA
+    value: {{ .Values.appTag }}
+  - name: APP_BRANCH
+    value: {{ .Values.branch }}
+
+livenessProbe:
+{{ if .Values.liveness }}
+{{ toYaml .Values.liveness | indent 2 }}
+{{ else }}
+  exec:
+    command:
+    - touch
+    - /tmp/foo
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  failureThreshold: 5
+{{ end }}
+{{- end -}} 
+{{- define ".ontainer" -}}
+{{- /* clear new line so indentation works correctly */ -}}
+{{- println "" -}}
+{{- end -}}
+

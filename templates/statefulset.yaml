@@ -1,0 +1,13 @@
+{{- template "statefulset.tpl" . -}}
+---
+
+{{- define "sidekiqset" -}}
+metadata:
+  name: {{ .Values.appName }}-sidekq
+spec:
+    replicas: 1
+    template:
+      spec:
+        containers:
+        - {{- template "container.tpl" . -}}
+{{- end -}}
