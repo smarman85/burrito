@@ -15,34 +15,8 @@ ports:
   volumeMounts:
 {{ end }}
 
-#{{- define "container.tpl" -}}
-#{{ if .Values.entryPoints.sidekiq.common -}}
-#{{ range until (int .Values.entryPoints.sidekiq.common.count) -}}
-#- name: {{ $.Values.entryPoints.sidekiq.common.name }}_{{ . }}
-#  image: form-values
-#  command: {{ $.Values.entryPoints.sidekiq.common.binstub }}
-#  volumeMounts:
-#{{ end }}
-#{{- end -}}
-#{{ if .Values.entryPoints.sidekiq.threaded -}}
-#{{ range until (int .Values.entryPoints.sidekiq.threaded.count) -}}
-#- name: {{ $.Values.entryPoints.sidekiq.threaded.name }}_{{ . }}
-#  image: form-values
-#  command: {{ $.Values.entryPoints.sidekiq.threaded.binstub }}
-#  volumeMounts:
-#{{ end }}
-#{{- end -}}
-#{{ if .Values.entryPoints.sidekiq.low_pri -}}
-#{{ range until (int .Values.entryPoints.sidekiq.low_pri.count) -}}
-#- name: {{ $.Values.entryPoints.sidekiq.low_pri.name }}_{{ . }}
-#  image: form-values
-#  command: {{ $.Values.entryPoints.sidekiq.low_pri.binstub }}
-#  volumeMounts:
-#{{ end }}
-#{{- end -}}
-
-
 # common workers
+{{- define "container.tpl" -}}
 {{ if .Values.entryPoints.sidekiq.common -}}
 {{ range until (int .Values.entryPoints.sidekiq.common.count) -}}
 - name: {{ $.Values.entryPoints.sidekiq.common.name }}_{{ . }}
@@ -69,12 +43,12 @@ ports:
 
 name: {{ .Values.appName }}
 imagePullPolicy: "{{ .Values.pullPolicy }}"
-{{ if .Values.podEnv }}
+{{- if .Values.podEnv }}
 env:
 {{ toYaml .Values.podEnv | indent 2 }}
 {{ else }}
 env:
-{{ end }}
+{{ end -}}
   - name: NODE_IP
     valueFrom:
       fieldRef:
@@ -105,9 +79,5 @@ livenessProbe:
   periodSeconds: 10
   failureThreshold: 5
 {{ end }}
-{{- end -}} 
-{{- define ".ontainer" -}}
-{{- /* clear new line so indentation works correctly */ -}}
-{{- println "" -}}
 {{- end -}}
 

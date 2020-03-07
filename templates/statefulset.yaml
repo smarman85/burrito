@@ -1,6 +1,5 @@
 {{- template "statefulset.tpl" . -}}
 ---
-
 {{- define "sidekiqset" -}}
 metadata:
   name: {{ .Values.appName }}-sidekq
